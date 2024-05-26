@@ -2,6 +2,7 @@ import React from 'react';
 
 import { sample } from '../../utils';
 import { WORDS } from '../../data';
+import { NUM_OF_GUESSES_ALLOWED } from '../../constants';
 
 import GuessInput from '../GuessInput';
 import GuessResults from '../GuessResults';
@@ -12,6 +13,8 @@ const answer = sample(WORDS);
 console.info({ answer });
 
 function Game() {
+  // running, won, lost
+  const [gameStatus, setGameStatus] = React.useState('running');
   const [guesses, setGuesses] = React.useState([]);
 
   function handleSubmitGuess(tentativeGuess) {
@@ -21,12 +24,21 @@ function Game() {
     };
 
     setGuesses([...guesses, nextGuess]);
+
+    if (tentativeGuess.toUpperCase() === answer) {
+      setGameStatus('won');
+    } else if (guesses.length >= NUM_OF_GUESSES_ALLOWED - 1) {
+      setGameStatus('lost');
+    }
   }
 
   return (
     <>
       <GuessResults guesses={guesses} answer={answer} />
-      <GuessInput handleSubmitGuess={handleSubmitGuess} />
+      <GuessInput
+        gameStatus={gameStatus}
+        handleSubmitGuess={handleSubmitGuess}
+      />
     </>
   );
 }
